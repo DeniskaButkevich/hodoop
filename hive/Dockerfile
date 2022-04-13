@@ -1,46 +1,37 @@
-FROM hdfs
+FROM hdfs-base
 
-# Allow buildtime config of HIVE_VERSION
-ARG HIVE_VERSION
-# Set HIVE_VERSION from arg if provided at build, env if provided at run, or default
-# https://docs.docker.com/engine/reference/builder/#using-arg-variables
-# https://docs.docker.com/engine/reference/builder/#environment-replacement
-ENV HIVE_VERSION=${HIVE_VERSION:-3.1.3}
+# dependencies
+RUN apk add --no-cache nano && apk add --no-cache bash
+RUN apk add --no-cache curl unzip 
 
-ENV HIVE_HOME /home/hduser/hive
-ENV PATH $HIVE_HOME/bin:$PATH
-ENV HADOOP_HOME /home/hduser/hadoop-3.3.1
+ENV HIVE_VERSION=3.1.2
+ENV HIVE_HOME=/usr/hive
+ENV HIVE_CONF_DIR="${HIVE_HOME}/conf"
+ENV PATH "${PATH}:${HIVE_HOME}/bin"
+RUN curl --progress-bar -L \
+  "https://archive.apache.org/dist/hive/hive-${HIVE_VERSION}/apache-hive-${HIVE_VERSION}-bin.tar.gz" \
+    | gunzip \
+    | tar -x -C /usr/ \
+  && mv "/usr/apache-hive-${HIVE_VERSION}-bin" "${HIVE_HOME}" \
+  && chown -R root:root "${HIVE_HOME}" \
+  && mkdir -p "${HIVE_HOME}/hcatalog/var/log" \
+  && mkdir -p "${HIVE_HOME}/var/log" \
+  && mkdir -p "${HIVE_CONF_DIR}" \
+  && chmod 777 "${HIVE_HOME}/hcatalog/var/log" \
+  && chmod 777 "${HIVE_HOME}/var/log"
 
-WORKDIR /home/hduser
+# Hive setup
+ENV PATH="${PATH}:${HIVE_HOME}/bin"
+ENV HADOOP_CLASSPATH="${HADOOP_CLASSPATH}:${HIVE_HOME}/lib/*"
+COPY hive-site.xml "${HIVE_CONF_DIR}/"
 
-#Install Hive and PostgreSQL JDBC
-RUN apk update && \
-	wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	mv apache-hive-$HIVE_VERSION-bin hive && \
-	wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar -O $HIVE_HOME/lib/postgresql-jdbc.jar && \
-	rm apache-hive-$HIVE_VERSION-bin.tar.gz && 
+# Clean up
+RUN rm -rf "${HIVE_HOME}/examples" 
 
-#Spark should be compiled with Hive to be able to use it
-#hive-site.xml should be copied to $SPARK_HOME/conf folder
+# # If both YARN Web UI and Spark UI is up, then returns 0, 1 otherwise.
+# HEALTHCHECK CMD curl -f http://host.docker.internal:8080/ \
+#     && curl -f http://host.docker.internal:8088/ || exit 1
 
-#Custom configuration goes here
-ADD conf/hive-site.xml $HIVE_HOME/conf
-ADD conf/beeline-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-env.sh $HIVE_HOME/conf
-ADD conf/hive-exec-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-log4j2.properties $HIVE_HOME/conf
-ADD conf/ivysettings.xml $HIVE_HOME/conf
-ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
-
-COPY startup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh
-
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-EXPOSE 10000
-EXPOSE 10002
-
-ENTRYPOINT ["entrypoint.sh"]
-CMD startup.sh
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

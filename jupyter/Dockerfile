@@ -27,6 +27,8 @@ RUN pip install wheel
 RUN pip3 install jupyter
 RUN pip3 install --ignore-installed distlib pipenv
 RUN pip3 install virtualenv 
+RUN apk del --purge gcc musl-dev && \
+  rm -r /root/.cache && rm -rf /var/cache/apk/* 
 
 WORKDIR /src/notebooks
 
