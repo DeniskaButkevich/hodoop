@@ -1,19 +1,11 @@
-FROM ibmjava:8-sdk-alpine
+FROM alpine-base
 
-# dependencies
-RUN \
- apk add --no-cache nano && \
- apk add --no-cache openssh && \
- apk add --no-cache bash && \
- apk add --no-cache dos2unix && \
- # update wget for limit-rate internet
- apk update && \
- apk add wget
+ENV HADOOP_VERSION 3.3.1
 
 WORKDIR /home/hduser
 
 # download hadoop
-RUN wget --limit-rate=1G https://downloads.apache.org/hadoop/common/hadoop-3.3.1/hadoop-3.3.1.tar.gz
+RUN wget --limit-rate=1G https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz
 
 # configure passwordless SSH
 RUN \
@@ -36,14 +28,16 @@ RUN \
  apk add libuser && touch /etc/login.defs && mkdir /etc/default && touch /etc/default/useradd && echo "/bin/bash" | lchsh root
 
 # extract Hadoop
-RUN tar zxvf hadoop-3.3.1.tar.gz && rm hadoop-3.3.1.tar.gz
+RUN tar zxvf hadoop-${HADOOP_VERSION}.tar.gz && rm hadoop-${HADOOP_VERSION}.tar.gz
 
-ENV HDFS_NAMENODE_USER root
-ENV HDFS_DATANODE_USER root
-ENV HDFS_SECONDARYNAMENODE_USER root
-ENV YARN_RESOURCEMANAGER_USER root
-ENV YARN_NODEMANAGER_USER root
-ENV HADOOP_HOME /home/hduser/hadoop-3.3.1
+ENV \
+ HDFS_NAMENODE_USER=root \
+ HDFS_DATANODE_USER=root \
+ HDFS_SECONDARYNAMENODE_USER=root \
+ YARN_RESOURCEMANAGER_USER=root \
+ YARN_NODEMANAGER_USER=root 
+
+ENV HADOOP_HOME /home/hduser/hadoop-${HADOOP_VERSION}
 
 RUN echo 'export JAVA_HOME=/opt/ibm/java/jre' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh 
 
@@ -55,10 +49,10 @@ COPY \
  $HADOOP_HOME/etc/hadoop/
 
 RUN \
- chmod +x /home/hduser/hadoop-3.3.1/etc/hadoop/docker-entrypoint.sh && \
- chmod +x /home/hduser/hadoop-3.3.1/etc/hadoop/hadoop-env.sh  && \
+ chmod +x /home/hduser/hadoop-${HADOOP_VERSION}/etc/hadoop/docker-entrypoint.sh && \
+ chmod +x /home/hduser/hadoop-${HADOOP_VERSION}/etc/hadoop/hadoop-env.sh  && \
  # for normal operation of the shell script under Windows
- dos2unix /home/hduser/hadoop-3.3.1/etc/hadoop/docker-entrypoint.sh
+ dos2unix /home/hduser/hadoop-${HADOOP_VERSION}/etc/hadoop/docker-entrypoint.sh
 
 # #todo mayb add java home
 ENV PATH $PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin

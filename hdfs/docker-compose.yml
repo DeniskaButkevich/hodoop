@@ -1,6 +1,13 @@
 version: "3"
 services:
-  hadoop-base:
+  alpine-base:
+    build: ../alpine
+    image: alpine-base
+    container_name: alpine-base
+    tty: true
+  hadoop:
+    depends_on:
+      - alpine-base
     build: .
     image: hadoop
     container_name: hadoop

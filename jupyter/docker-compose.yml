@@ -1,0 +1,17 @@
+version: "3"
+services:
+  alpine-base-jupyter:
+    build: ../alpine
+    image: alpine-base-jupyter
+    container_name: alpine-base-jupyter
+    tty: true
+  jupyter:
+    depends_on:
+      - alpine-base-jupyter
+    build: .
+    image: jupyter
+    container_name: jupyter
+    hostname: localhost
+    ports:
+      - 8888:8888
+    tty: true

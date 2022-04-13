@@ -1,35 +1,32 @@
-FROM ubuntu:20.04
+FROM alpine-base
 
-ENV HDFS_USER hdfs_user
-
-RUN apt-get update -y && apt-get upgrade -y && \
-    apt-get install sudo -y && \
-    apt-get install nano -y && \
-    apt-get install dos2unix -y && \
-    sudo apt-get install openssh-server openssh-client -y
-
-#add hdfs user to hadoop group with root privilages
-RUN sudo addgroup hadoop
-RUN sudo echo -e  "adduser --ingroup hadoop $HDFS_USER <<EOF\n$PASS\n$PASS\nEOF"  >  addnewuser.sh
-RUN chmod +x addnewuser.sh
-RUN ./addnewuser.sh
-RUN usermod -aG sudo $HDFS_USER
-RUN echo "$HDFS_USER ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-#allow running ssh without password asking
-RUN sudo echo -e "Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null" >>  /etc/ssh/ssh_config
-#disable ipv6
-RUN sudo echo -e 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1' >> /etc/sysctl.conf
-
-RUN apt-get install -y build-essential python3.6 python3-pip python3-dev
-RUN pip3 -q install pip --upgrade
-RUN echo 'export PATH=$PATH:/home/${HDFS_USER}/./local/bin' >> ~/.bashrc
-RUN . ~/.bashrc
+ENV HDFS_USER root
 
 RUN mkdir src
 WORKDIR src/
 
-RUN pip3 install jupyter && pip3 install virtualenv
+# dependencies for jupyter
+RUN \
+  apk add \
+  libffi-dev \
+  py3-pygments \
+  py3-cffi \
+  py3-cryptography \
+  py3-jinja2 \
+  py3-openssl \
+  py3-pexpect \
+  py3-tornado \
+  python3 \
+  python3-dev && \
+  apk add cmd:pip3 && \
+  pip3 install --no-cache-dir --upgrade setuptools pip
+# install jupyter  
+RUN apk --no-cache add gcc musl-dev
+
+RUN pip install wheel
+RUN pip3 install jupyter
+RUN pip3 install --ignore-installed distlib pipenv
+RUN pip3 install virtualenv 
 
 WORKDIR /src/notebooks
 
@@ -44,5 +41,3 @@ USER  $HDFS_USER
 
 #expose Jupyter notebook default port
 EXPOSE 8888
-
-
