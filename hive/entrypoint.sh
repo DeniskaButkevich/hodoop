@@ -1,16 +1,26 @@
 #!/bin/bash
 
-if [ -n "${HIVE_CONFIGURE}" ]; then
-  echo "Configuring Hive..."
-  schematool -dbType postgres -initSchema
-
-  # Start metastore service.
-  hive --service metastore &
-
-  # JDBC Server.
-  hiveserver2 &
+if [ ! -d "/home/hduser/hadoop-3.3.1/data/dfs/datanode" ]; then
+        hdfs namenode -format
 fi
 
-echo "hive started"
+hdfs --daemon start namenode
+echo "namenode started"
 
+hdfs --daemon start datanode
+echo "datanode started"
+
+hdfs dfs -mkdir /tmp
+hdfs dfs -chmod g+w /tmp
+hdfs dfs -mkdir -p /user/hive/warehouse
+hdfs dfs -chmod g+w /user/hive/warehouse
+
+echo "Start metastore service"
+hive --service metastore &
+echo "JDBC Server"
+hiveserver2 &
+echo "postgres -initSchema"
+schematool -dbType postgres -initSchema
+
+echo "hive started"
 tail -f /dev/null
