@@ -26,7 +26,7 @@
     </property>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://db:5432/metastore</value>
+        <value>jdbc:postgresql://localhost:5432/metastore_db;databaseName=metastore_db;create=true</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
@@ -46,7 +46,12 @@
     </property>
     <property>
         <name>datanucleus.autoCreateTables</name>
-        <value>True</value>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
     </property>
 
     <property>

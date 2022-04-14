@@ -15,12 +15,13 @@ hdfs dfs -chmod g+w /tmp
 hdfs dfs -mkdir -p /user/hive/warehouse
 hdfs dfs -chmod g+w /user/hive/warehouse
 
+echo "postgres -initSchema"
+schematool -dbType postgres -initSchema -verbose
 echo "Start metastore service"
 hive --service metastore &
 echo "JDBC Server"
 hiveserver2 &
-echo "postgres -initSchema"
-schematool -dbType postgres -initSchema
+
 
 echo "hive started"
 tail -f /dev/null
