@@ -48,7 +48,7 @@ services:
   hive:
     depends_on:
       - hdfs
-    build: .
+    build: ./hive
     image: hive-base
     container_name: hive-base
     tty: true
