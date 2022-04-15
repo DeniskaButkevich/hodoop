@@ -3,54 +3,37 @@ services:
   alpine:
     build: ../alpine
     image: alpine-base
-    container_name: alpine-base3
+    container_name: alpine-base
     tty: true
   db:
     image: postgres:11.4-alpine
-    container_name: postgres
+    container_name: db
     ports:
       - "5000:5432"
     volumes:
       - /var/lib/postgresql/data/pgdata
     environment:
-      - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=greenhouse
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=metastore_db
       - PGDATA=/var/lib/postgresql/data/pgdata
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/greenhouse
-    restart: always
   hdfs:
     depends_on:
       - alpine
     build: ../hdfs
-    image: hdfs-base
-    container_name: hdfs-base3
-    hostname: localhost
-    ports:
-        - 9870:9870
-        - 9864:9864
-        - 9000:9000
-        - 50070:50070
-        - 50075:50075
-        - 50010:50010
-        - 50020:50020
-        - 50090:50090
-        - 10020:10020
-        - 19888:19888
-        - 8020:8020
-        - 8030:8030
-        - 8031:8031
-        - 8032:8032
-        - 8033:8033
-        - 8040:8040 
-        - 8042:8042
-        - 8088:8088
-        - 8080:8080
+    image: hdfs
+    container_name: hdfs
     tty: true
+    entrypoint: ["bash"]
+    command: ["tail -f /dev/null"]
   hive:
     depends_on:
-      - hdfs
+      - db
     build: .
-    image: hive-baser
-    container_name: hive-baser3
+    image: hive
+    container_name: hive
+    ports:
+      - "9870:9870"
+      - "10000:10000"
+      - "10002:10002"
     tty: true

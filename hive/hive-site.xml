@@ -20,42 +20,43 @@
         <name>hive.metastore.warehouse.dir</name>
         <value>/usr/hive/warehouse</value>
     </property>
-
-    <!--Postgres metastore connection details (stores info about tables etc.)-->
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>org.postgresql.Driver</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:postgresql://hivemetastore:5432/hivemetastoredb</value>
+        <value>jdbc:postgresql://db:5432/metastore_db</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>postgres</value>
+        <value>admin</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>new_password</value>
+        <value>admin</value>
     </property>
 
-    <!--    https://cwiki.apache.org/confluence/display/Hive/Hive+on+Spark%3A+Getting+Started -->
     <property>
-        <name>hive.execution.engine</name>
-        <value>spark</value>
-    </property>
-    <property>
-        <name>spark.yarn.jars</name>
-        <value>hdfs://master:9000/spark-jars/*</value>
+        <name>datanucleus.autoStartMechanism</name>
+        <value>SchemaTable</value>
     </property>
 
-    <!-- To be able to execute Hive queries from Zeppelin -->
     <property>
-        <name>hive.server2.enable.doAs</name>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateTables</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.fixedDatastore</name>
         <value>false</value>
-        <description>
-            Setting this property to true will have HiveServer2 execute
-            Hive operations as the user making the calls to it.
-        </description>
+    </property>
+
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
     </property>
 </configuration>

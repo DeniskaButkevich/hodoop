@@ -1,8 +1,7 @@
-FROM hdfs-base
+FROM hdfs
 
 # dependencies
-RUN apk add --no-cache nano && apk add --no-cache bash
-RUN apk add --no-cache curl unzip 
+RUN apk add --no-cache curl unzip lsof
 
 ENV HIVE_VERSION=3.1.2
 ENV HIVE_HOME=/usr/hive
@@ -20,18 +19,31 @@ RUN curl --progress-bar -L \
   && chmod 777 "${HIVE_HOME}/hcatalog/var/log" \
   && chmod 777 "${HIVE_HOME}/var/log"
 
+RUN echo 'export HIVE_HOME=/usr/hive' >> ~/.bashrc
+RUN echo 'export PATH=$PATH:$HIVE_HOME/bin' >> ~/.bashrc
+
 # Hive setup
 ENV PATH="${PATH}:${HIVE_HOME}/bin"
+
+ENV HADOOP_VERSION 3.3.1
+ENV HADOOP_HOME /home/hduser/hadoop-${HADOOP_VERSION}
+ENV HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
 ENV HADOOP_CLASSPATH="${HADOOP_CLASSPATH}:${HIVE_HOME}/lib/*"
 COPY hive-site.xml "${HIVE_CONF_DIR}/"
 
-# Clean up
-RUN rm -rf "${HIVE_HOME}/examples" 
+ARG POSTGRESQL_JDBC_VERSION=42.2.24
+RUN mkdir -p /usr/share/java
+RUN curl -fSL https://jdbc.postgresql.org/download/postgresql-$POSTGRESQL_JDBC_VERSION.jar -o $HIVE_HOME/lib/postgresql-jdbc.jar
 
-# # If both YARN Web UI and Spark UI is up, then returns 0, 1 otherwise.
-# HEALTHCHECK CMD curl -f http://host.docker.internal:8080/ \
-#     && curl -f http://host.docker.internal:8088/ || exit 1
+# Clean up
+#RUN apk add java-postgresql-jdbc
+
+RUN rm -rf "${HIVE_HOME}/examples"
 
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
+
+EXPOSE 10000 10002 9870
+
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["tail -f /dev/null"]

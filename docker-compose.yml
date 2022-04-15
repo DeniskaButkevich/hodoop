@@ -32,6 +32,7 @@ services:
         - 8042:8042
         - 8088:8088
         - 8080:8080
+        - 2288:2288
     tty: true
   jupyter:
     depends_on:
@@ -45,10 +46,29 @@ services:
     volumes:
       - ./jupyter/task:/src/notebooks
     tty: true
+  db:
+    image: postgres:11.4-alpine
+    container_name: postgres-base
+    ports:
+      - "5000:5432"
+    volumes:
+      - /var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=hivemetastoredb
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    restart: always
   hive:
     depends_on:
+      - db
       - hdfs
     build: ./hive
     image: hive-base
     container_name: hive-base
+    ports:
+      - "10000:10000"
+    links:
+      - db
+      - hdfs
     tty: true
