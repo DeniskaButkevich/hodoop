@@ -12,7 +12,6 @@ ___
 #for work from bash
 3. docker exec -it <container name> bash
 ```
-to check status use `hdfs dfsadmin -report` because jre is not included JPS
 ## with docker-compose
 
 ```dockerfile
@@ -22,4 +21,10 @@ to check status use `hdfs dfsadmin -report` because jre is not included JPS
 #for working from bash (use this in another terminal)
 2. docker exec -it hadoop bash
 ```
-to check status use `hdfs dfsadmin -report` because jre is not included JPS
+---
+
+### Helps
++ to check status use `$bash ps` because jre is not included JPS
+
++ UI Namenode information -> `localhost:9870`
+

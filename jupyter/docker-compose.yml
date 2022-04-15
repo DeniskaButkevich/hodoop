@@ -2,7 +2,7 @@ version: "3"
 services:
   alpine-base-jupyter:
     build: ../alpine
-    image: alpine-base-jupyter
+    image: alpine-base
     container_name: alpine-base-jupyter
     tty: true
   jupyter:

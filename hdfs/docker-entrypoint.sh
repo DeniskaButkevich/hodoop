@@ -1,17 +1,17 @@
 #!/bin/bash
 
-#if [ ! -d "/home/hduser/hadoop-3.3.1/data/dfs/datanode" ]; then
-#        hdfs namenode -format
-#fi
+cmd="$@"
 
-#hdfs --daemon start namenode
-#echo "namenode started"
-#
-#hdfs --daemon start datanode
-#echo "datanode started"
-#
-#hdfs --daemon start secondarynamenode
-#yarn --daemon start resourcemanager
-#yarn --daemon start nodemanager
+if [ ! -d "/home/hduser/hadoop-3.3.1/data/dfs/datanode" ]; then
+    hdfs namenode -format
+fi
 
-#tail -f /dev/null
+  echo "Starting Hadoop name node..."
+  hdfs --daemon start namenode
+  hdfs --daemon start secondarynamenode
+  yarn --daemon start resourcemanager
+  echo "Starting Hadoop data node..."
+  hdfs --daemon start datanode
+  yarn --daemon start nodemanager
+
+exec $cmd
