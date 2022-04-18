@@ -1,4 +1,4 @@
-FROM hdfs
+FROM base_alpine_hadoop:3.3.1
 
 # dependencies
 RUN apk add --no-cache curl unzip lsof
@@ -43,7 +43,7 @@ RUN rm -rf "${HIVE_HOME}/examples"
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 10000 10002 9870
+EXPOSE 10000 10002 9083
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["tail -f /dev/null"]

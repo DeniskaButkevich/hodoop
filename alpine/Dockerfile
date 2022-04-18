@@ -1,4 +1,4 @@
-FROM ibmjava:8-sdk-alpine
+FROM ibmjava:8-jre-alpine
 
 # dependencies
 RUN \
@@ -8,4 +8,5 @@ RUN \
  apk add --no-cache dos2unix && \
  # update wget for limit-rate internet
  apk update && \
- apk add wget
+ apk add wget && \
+ apk add curl

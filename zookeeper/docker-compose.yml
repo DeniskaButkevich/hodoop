@@ -1,0 +1,14 @@
+version: "3"
+services:
+  alpine:
+    build: ../alpine
+    image: dez/base-alpine:latest
+    container_name: alpine-zookeeper
+    tty: true
+  zookeeper:
+    build: .
+    image: dez/base-alpine-zookeeper:3.4.6
+    container_name: zookeeper-zookeeper
+    hostname: zk
+    ports:
+      - "2181:2181"

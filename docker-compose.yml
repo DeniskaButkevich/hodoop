@@ -2,73 +2,58 @@ version: "3"
 services:
   alpine:
     build: ./alpine
-    image: alpine-base
-    container_name: alpine-base
+    image: dez/base-alpine:latest
+    container_name: alpine
     tty: true
-  hdfs:
-    depends_on:
-      - alpine
-    build: ./hdfs
-    image: hdfs-base
-    container_name: hdfs-base
-    hostname: localhost
+  hadoop:
+    build: ./hadoop
+    image: dez/base-alpine-hadoop:3.3.1
+    container_name: hadoop
     ports:
-        - 9870:9870
-        - 9864:9864
-        - 9000:9000
-        - 50070:50070
-        - 50075:50075
-        - 50010:50010
-        - 50020:50020
-        - 50090:50090
-        - 10020:10020
-        - 19888:19888
-        - 8020:8020
-        - 8030:8030
-        - 8031:8031
-        - 8032:8032
-        - 8033:8033
-        - 8040:8040 
-        - 8042:8042
-        - 8088:8088
-        - 8080:8080
-        - 2288:2288
+      - "9870:9870"
+      - "9864:9864"
+      - "8088:8088"
     tty: true
   jupyter:
-    depends_on:
-      - alpine
     build: ./jupyter
-    image: jupyter-baser
-    container_name: jupyter-baser
-    hostname: localhost
+    image: dez/base-alpine-jupyter:latest
+    container_name: jupyter
     ports:
-      - 8888:8888
+      - "8888:8888"
     volumes:
       - ./jupyter/task:/src/notebooks
     tty: true
   db:
     image: postgres:11.4-alpine
-    container_name: postgres-base
+    container_name: postgres
     ports:
       - "5000:5432"
     volumes:
       - /var/lib/postgresql/data/pgdata
+      - ./hive/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=hivemetastoredb
+      - POSTGRES_DB=metastore_db
       - PGDATA=/var/lib/postgresql/data/pgdata
     restart: always
   hive:
     depends_on:
       - db
-      - hdfs
+      - hadoop
     build: ./hive
-    image: hive-base
-    container_name: hive-base
+    image: dez/base-alpine-hive:3.1.2
+    container_name: hive
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hadoop:50070 hadoop:50075"
     ports:
       - "10000:10000"
-    links:
-      - db
-      - hdfs
+      - "10002:10002"
     tty: true
+  zookeeper:
+    build: ./zookeeper
+    image: dez/base-alpine-zookeeper:3.4.6
+    container_name: zookeeper
+    hostname: zk
+    ports:
+      - "2181:2181"

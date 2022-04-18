@@ -1,0 +1,1 @@
+DROP DATABASE metastore_db;
