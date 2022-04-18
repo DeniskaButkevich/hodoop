@@ -1,0 +1,20 @@
+version: "3"
+services:
+  alpine-base:
+    build: ../alpine
+    image: dez/base-alpine:latest
+    container_name: alpine-hadoop
+    tty: true
+  hadoop:
+    depends_on:
+      - alpine-base
+    build: .
+    image: dez/base-alpine-hadoop:3.3.1
+    container_name: hadoop-hadoop
+    ports:
+      - 9870:9870
+      - 9864:9864
+      - 9000:9000
+    volumes:
+      - ./tasks:/usr/local/tasks
+    tty: true

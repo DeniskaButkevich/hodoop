@@ -1,4 +1,4 @@
-FROM alpine-base
+FROM base_alpine
 
 ENV HDFS_USER root
 

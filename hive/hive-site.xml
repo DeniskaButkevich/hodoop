@@ -59,4 +59,6 @@
         <name>datanucleus.schema.autoCreateAll</name>
         <value>true</value>
     </property>
+
+
 </configuration>

@@ -2,12 +2,12 @@ version: "3"
 services:
   alpine:
     build: ../alpine
-    image: alpine-base
-    container_name: alpine-base
+    image: dez/base-alpine:latest
+    container_name: alpine-hive
     tty: true
-  db:
+  postgres:
     image: postgres:11.4-alpine
-    container_name: db
+    container_name: postgres-hive
     ports:
       - "5000:5432"
     volumes:
@@ -17,21 +17,21 @@ services:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=metastore_db
       - PGDATA=/var/lib/postgresql/data/pgdata
-  hdfs:
+  hadoop:
     depends_on:
       - alpine
-    build: ../hdfs
-    image: hdfs
-    container_name: hdfs
+    build: ../hadoop
+    image: dez/base-alpine-hadoop:3.3.1
+    container_name: hadoop-hive
     tty: true
     entrypoint: ["bash"]
     command: ["tail -f /dev/null"]
   hive:
     depends_on:
-      - db
+      - postgres
     build: .
-    image: hive
-    container_name: hive
+    image: dez/base-alpine-hive:3.1.2
+    container_name: hive-hive
     ports:
       - "9870:9870"
       - "10000:10000"

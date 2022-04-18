@@ -1,4 +1,4 @@
-FROM alpine-base
+FROM dez/base-alpine:latest
 
 ENV HADOOP_VERSION 3.3.1
 
@@ -49,6 +49,7 @@ COPY \
  core-site.xml \
  hdfs-site.xml \
  yarn-site.xml \
+ mapred-site.xml \
  docker-entrypoint.sh \
  $HADOOP_HOME/etc/hadoop/
 
@@ -58,10 +59,17 @@ RUN \
  # for normal operation of the shell script under Windows
  dos2unix /home/hduser/hadoop-${HADOOP_VERSION}/etc/hadoop/docker-entrypoint.sh
 
-# #todo mayb add java home
+#todo mayb add java home
 ENV PATH $PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
-EXPOSE 50070 50075 50010 50020 50090 8020 9000 9864 9870 10020 19888 8088 8030 8031 8032 8033 8040 8042 8888 22 2288
+# Hdfs ports
+EXPOSE 50010 50020 50070 50075 50090 8020 9000 9870
+# Mapred ports
+EXPOSE 10020 19888
+#Yarn ports
+EXPOSE 8030 8031 8032 8033 8040 8042 8088
+#Other ports
+EXPOSE 49707 2122 22
 
 ENTRYPOINT ["/home/hduser/hadoop-3.3.1/etc/hadoop/docker-entrypoint.sh"]
 CMD ["tail -f /dev/null"]
