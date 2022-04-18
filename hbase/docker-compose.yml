@@ -1,0 +1,20 @@
+version: "3"
+services:
+  alpine:
+    build: ../alpine
+    image: dez/base-alpine:latest
+    container_name: alpine-jupyter
+    tty: true
+  hbase:
+    build: .
+    image: dez/base-alpine-hbase:1.1.2
+    hostname: hbase
+    container_name: hbase-hbase
+    ports:
+      - "60000:60000"
+      - "60010:60010"
+      - "60020:60020"
+      - "60030:60030"
+      - "8070:8070"
+      - "8090:8090"
+    tty: true
