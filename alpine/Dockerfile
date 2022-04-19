@@ -9,4 +9,6 @@ RUN \
  # update wget for limit-rate internet
  apk update && \
  apk add wget && \
- apk add curl
+ apk add curl && \
+ apk add busybox-extras && \
+   rm -rf /var/lib/apt/lists/*
