@@ -3,11 +3,37 @@ services:
   alpine:
     build: ../alpine
     image: dez/base-alpine:latest
-    container_name: alpine-jupyter
+    container_name: alpine-hbase
     tty: true
+  hadoop:
+    build: ../hadoop
+    image: dez/base-alpine-hadoop:3.3.1
+    container_name: hadoop-hbase
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - hadoop_namenode:/hadoop/dfs/name
+    ports:
+      - "50070:50070"
+      - "50075:50075"
+      - "9870:9870"
+      - "9864:9864"
+    tty: true
+  zookeeper:
+    build: ../zookeeper
+    image: dez/base-alpine-zookeeper:3.5.6
+    container_name: zookeeper-hbase
+    hostname: zk
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
   hbase:
+    depends_on:
+      - zookeeper
+      - hadoop
     build: .
-    image: dez/base-alpine-hbase:1.1.2
+    image: dez/base-alpine-hbase:2.4.9
     hostname: hbase
     container_name: hbase-hbase
     ports:
@@ -18,3 +44,6 @@ services:
       - "8070:8070"
       - "8090:8090"
     tty: true
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:

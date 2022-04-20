@@ -12,7 +12,7 @@ Build a hbase docker image on Alpine Linux. Also install Apache Phoenix.
 - HBase Regionserver web UI: 60030
 
 ## Building the image       
-- ``docker build -t dez/base-alpine-hbase:1.1.2 .``
+- ``docker build -t dez/base-alpine-hbase:2.4.9 .``
 
 ## Usage
 Start a cluster with zookeeper and hbase:

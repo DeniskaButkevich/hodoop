@@ -6,9 +6,8 @@ RUN \
  apk add --no-cache openssh && \
  apk add --no-cache bash && \
  apk add --no-cache dos2unix && \
- # update wget for limit-rate internet
- apk update && \
- apk add wget && \
- apk add curl && \
- apk add busybox-extras && \
-   rm -rf /var/lib/apt/lists/*
+ apk add --no-cache curl && \
+ apk add --no-cache busybox-extras && \
+ echo 'http://dl-cdn.alpinelinux.org/alpine/v3.14/community' >> /etc/apk/repositories && \
+ apk --no-cache add libuser && \
+    rm -rf /var/lib/apt/lists/*

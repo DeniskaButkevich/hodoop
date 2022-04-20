@@ -1,33 +1,25 @@
 FROM dez/base-alpine:latest
 
-ENV HBASE_VERSION 1.1.2
-ENV HBASE_ROOT_VERSION 1.1
-ENV PHOENIX_VERSION 4.7.0
+ENV HBASE_VERSION 2.4.9
 
 # Download and Install HBase
-
-RUN wget -q http://archive.apache.org/dist/hbase/1.1.2/hbase-$HBASE_VERSION-bin.tar.gz && \
+RUN curl -O http://archive.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz && \
    tar xzf hbase-$HBASE_VERSION-bin.tar.gz -C /opt/ && \
    ln -s /opt/hbase-$HBASE_VERSION /opt/hbase && \
    rm hbase-$HBASE_VERSION-bin.tar.gz
 
-# Download and Install Phoenix
-RUN wget -q http://mirror.symnds.com/software/Apache/phoenix/phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION/bin/phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION-bin.tar.gz && \
-   tar xzf phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION-bin.tar.gz -C /opt/hbase/lib && \
-   rm phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION-bin.tar.gz && \
-   cp /opt/hbase/lib/phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION-bin/phoenix-$PHOENIX_VERSION-HBase-$HBASE_ROOT_VERSION-server.jar /opt/hbase/lib
-
 ADD hbase-site.xml /opt/hbase/conf/hbase-site.xml
-ADD start-hbase.sh /opt/hbase/bin/start-hbase.sh
-RUN chmod a+x /opt/hbase/bin/start-hbase.sh
 
 RUN mkdir /opt/hbase/data
 RUN mkdir /opt/hbase/logs
 
-VOLUME /opt/hbase/data
-VOLUME /opt/hbase/logs
+RUN mkdir /hadoop-data
+ENV USER=root
 
 ENV PATH=$PATH:/opt/hbase/bin
+
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 # HBase Master API port
 EXPOSE 60000
@@ -44,4 +36,4 @@ EXPOSE 8090
 
 WORKDIR /opt/hbase/bin
 
-CMD start-hbase.sh
+ENTRYPOINT ["/entrypoint.sh"]
