@@ -8,24 +8,26 @@ services:
   postgres:
     image: postgres:11.4-alpine
     container_name: postgres-hive
-    ports:
-      - "5000:5432"
     volumes:
       - /var/lib/postgresql/data/pgdata
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hive
       - POSTGRES_DB=metastore_db
       - PGDATA=/var/lib/postgresql/data/pgdata
   hadoop:
-    depends_on:
-      - alpine
     build: ../hadoop
     image: dez/base-alpine-hadoop:3.3.1
     container_name: hadoop-hive
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - hadoop_namenode:/hadoop/dfs/name
+    ports:
+      - "50070:50070"
+      - "50075:50075"
+      - "9870:9870"
+      - "9864:9864"
     tty: true
-    entrypoint: ["bash"]
-    command: ["tail -f /dev/null"]
   hive:
     depends_on:
       - postgres
@@ -33,7 +35,10 @@ services:
     image: dez/base-alpine-hive:3.1.2
     container_name: hive-hive
     ports:
-      - "9870:9870"
       - "10000:10000"
-      - "10002:10002"
+      - "9999:9999"
+      - "9083:9083"
     tty: true
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
