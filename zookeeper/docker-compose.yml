@@ -7,7 +7,7 @@ services:
     tty: true
   zookeeper:
     build: .
-    image: dez/base-alpine-zookeeper:3.4.6
+    image: dez/base-alpine-zookeeper:3.5.6
     container_name: zookeeper-zookeeper
     hostname: zk
     ports:

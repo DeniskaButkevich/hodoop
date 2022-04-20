@@ -3,8 +3,6 @@ FROM dez/base-alpine:latest
 ENV HADOOP_VERSION 3.3.1
 ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
-RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz
-
 # configure passwordless SSH
 RUN \
  ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key && \
@@ -22,11 +20,13 @@ RUN \
 
 
 # Change default shell
-RUN \
- echo 'http://dl-cdn.alpinelinux.org/alpine/v3.14/community' >> /etc/apk/repositories && \
- apk add libuser && touch /etc/login.defs && mkdir /etc/default && touch /etc/default/useradd && echo "/bin/bash" | lchsh root
+RUN touch /etc/login.defs && mkdir /etc/default && touch /etc/default/useradd && echo "/bin/bash" | lchsh root
 
-RUN tar -zxvf /tmp/hadoop.tar.gz -C /opt/ && rm /tmp/hadoop.tar.gz*
+RUN \
+    curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz && \
+    curl -fSL "$HADOOP_URL.asc" -o /tmp/hbase.tar.gz.asc && \
+    tar -zxvf /tmp/hadoop.tar.gz -C /opt/ && \
+    rm /tmp/hadoop.tar.gz*
 
 ENV \
  HDFS_NAMENODE_USER=root \
@@ -70,7 +70,7 @@ RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
 RUN mkdir -p /hadoop/dfs/name
-VOLUME /hadoop/dfs/name
+VOLUME /hadoop/dfs/namedocker images
 
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000 9870 9864
