@@ -36,6 +36,7 @@ services:
     container_name: hive-hive
     ports:
       - "10000:10000"
+      - "10002:10002"
       - "9999:9999"
       - "9083:9083"
     tty: true
