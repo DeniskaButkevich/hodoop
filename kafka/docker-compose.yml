@@ -1,0 +1,50 @@
+version: "3"
+services:
+
+  alpine:
+    build: ../alpine
+    image: dez/base-alpine:latest
+    container_name: alpine-kafka
+    tty: true
+
+  #  zookeeper:
+#    build: ../zookeeper
+#    container_name: zookeeper-kafka
+#    image: dez/base-alpine-zookeeper:3.5.6
+#    command: zookeeper-server-start.sh config/zookeeper.properties
+#    ports:
+#      - 2181:2181
+#    # network_mode: bridge
+
+  zookeeper:
+    build: ../zookeeper
+    image: dez/base-alpine-zookeeper:3.5.6
+    container_name: zookeeper--kafka
+    ports:
+      - "2181:2181"
+#    environment:
+#      ZOO_MY_ID: 1
+#      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
+  kafka:
+    build: .
+    image: dez/base-alpine-kafka:2.7.1
+    container_name: kafka-kafka
+    depends_on:
+      - zookeeper
+#    entrypoint: /wait-for-it.sh zookeeper:2181 -s --timeout=5 -- /kafka-entrypoint.sh
+#    command: kafka-server-start.sh config/server.properties
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=localhost
+      - KAFKA_CREATE_TOPICS=docker:1:1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_HEAP_OPTS=-Xmx2G -Xms2G
+    ports:
+      - "9092"
+#    volumes:
+      # - kafka-logs:/tmp/kafka-logs
+#      - /var/run/docker.sock:/var/run/docker.sock
+    # network_mode: bridge
+
+#volumes:
+#  kafka-logs:
+
