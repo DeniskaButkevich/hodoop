@@ -6,8 +6,6 @@ services:
     container_name: alpine-jupyter
     tty: true
   jupyter:
-    depends_on:
-      - alpine
     build: .
     image: dez/base-alpine-jupyter:latest
     container_name: jupyter-jupyter
