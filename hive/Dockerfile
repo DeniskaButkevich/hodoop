@@ -41,7 +41,7 @@ RUN rm -rf "${HIVE_HOME}/examples"
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 10000 9999 9083
+EXPOSE 10002 10000 9999 9083
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["tail -f /dev/null"]

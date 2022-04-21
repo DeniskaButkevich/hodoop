@@ -1,13 +1,16 @@
-FROM base_alpine
+FROM dez/base-alpine:latest
 
-ENV HDFS_USER root
+USER root
 
 RUN mkdir src
 WORKDIR src/
 
 # dependencies for jupyter
 RUN \
-  apk add \
+  apk add  --update --no-cache \
+  nano \
+  bash \
+  openssh \
   libffi-dev \
   py3-pygments \
   py3-cffi \
@@ -17,18 +20,19 @@ RUN \
   py3-pexpect \
   py3-tornado \
   python3 \
-  python3-dev && \
-  apk add cmd:pip3 && \
-  pip3 install --no-cache-dir --upgrade setuptools pip
-# install jupyter  
-RUN apk --no-cache add gcc musl-dev
-
-RUN pip install wheel
-RUN pip3 install jupyter
-RUN pip3 install --ignore-installed distlib pipenv
-RUN pip3 install virtualenv 
-RUN apk del --purge gcc musl-dev && \
-  rm -r /root/.cache && rm -rf /var/cache/apk/* 
+  python3-dev \
+  py3-pip \
+  gcc \
+  musl-dev \
+  && pip3 install --no-cache-dir --upgrade setuptools pip \
+  && pip install wheel\
+  && pip3 install jupyter\
+  && pip3 install --ignore-installed distlib pipenv\
+  && pip3 install virtualenv \
+    && apk del --purge gcc musl-dev \
+      && rm -rf /var/lib/apt/lists/*  \
+      && rm -rf /var/cache/apk/* \
+      && rm -r /root/.cache
 
 WORKDIR /src/notebooks
 
@@ -38,8 +42,6 @@ RUN chmod +x /usr/bin/tini
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
-
-USER  $HDFS_USER
 
 #expose Jupyter notebook default port
 EXPOSE 8888
