@@ -1,50 +1,46 @@
 version: "3"
 services:
-
   alpine:
     build: ../alpine
     image: dez/base-alpine:latest
     container_name: alpine-kafka
     tty: true
-
-  #  zookeeper:
-#    build: ../zookeeper
-#    container_name: zookeeper-kafka
-#    image: dez/base-alpine-zookeeper:3.5.6
-#    command: zookeeper-server-start.sh config/zookeeper.properties
-#    ports:
-#      - 2181:2181
-#    # network_mode: bridge
-
   zookeeper:
     build: ../zookeeper
     image: dez/base-alpine-zookeeper:3.5.6
-    container_name: zookeeper--kafka
+    container_name: zookeeper-kafka
     ports:
       - "2181:2181"
-#    environment:
-#      ZOO_MY_ID: 1
-#      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888
   kafka:
     build: .
     image: dez/base-alpine-kafka:2.7.1
     container_name: kafka-kafka
     depends_on:
       - zookeeper
-#    entrypoint: /wait-for-it.sh zookeeper:2181 -s --timeout=5 -- /kafka-entrypoint.sh
-#    command: kafka-server-start.sh config/server.properties
+    entrypoint: /wait-for-it.sh zookeeper:2181 -s --timeout=5 -- /kafka-entrypoint.sh
+    command: kafka-server-start.sh config/server.properties
     environment:
-      - KAFKA_ADVERTISED_HOST_NAME=localhost
-      - KAFKA_CREATE_TOPICS=docker:1:1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_HEAP_OPTS=-Xmx2G -Xms2G
-    ports:
-      - "9092"
-#    volumes:
-      # - kafka-logs:/tmp/kafka-logs
-#      - /var/run/docker.sock:/var/run/docker.sock
-    # network_mode: bridge
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_HEAP_OPTS: -Xmx2G -Xms2G
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:SASL_PLAINTEXT
+#      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+#      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+#      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
 
-#volumes:
-#  kafka-logs:
+    ports:
+      - "9092:9092"
+    volumes:
+       - kafka-logs:/tmp/kafka-logs
+#      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  kafka-logs:
 
