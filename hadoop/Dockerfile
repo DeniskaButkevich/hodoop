@@ -70,7 +70,10 @@ RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
 RUN mkdir -p /hadoop/dfs/name
-VOLUME /hadoop/dfs/namedocker images
+VOLUME /hadoop/dfs/name
+
+RUN mkdir -p /src/notebooks
+VOLUME /sys/fs/cgroup
 
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000 9870 9864

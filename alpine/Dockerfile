@@ -4,6 +4,7 @@ FROM ibmjava:8-jre-alpine
 RUN apk add --no-cache \
     nano \
     openssh \
+    openrc \
     bash \
     dos2unix \
     curl \
