@@ -3,7 +3,7 @@
 Building the image
 ----
 
-- ``docker build -t base_alpine .``
+- ``docker build -t dez/base_alpine .``
 
 Version
 ---
