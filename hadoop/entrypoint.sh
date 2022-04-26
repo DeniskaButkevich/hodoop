@@ -8,7 +8,11 @@ if [ "`ls -A "/hadoop/dfs/name"`" == "" ]; then
 fi
 
 hdfs --daemon start --config $HADOOP_CONF_DIR namenode
-sleep 5
+sleep 2
 hdfs --daemon start --config $HADOOP_CONF_DIR datanode
-echo "!!!STARTED!!!"
+echo "
+!!!STARTED!!!"
+
+/usr/sbin/sshd -D -e
+
 exec $cmd

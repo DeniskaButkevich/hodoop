@@ -39,7 +39,7 @@ RUN curl -fSL https://jdbc.postgresql.org/download/postgresql-$POSTGRESQL_JDBC_V
 RUN rm -rf "${HIVE_HOME}/examples"
 
 COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint11.sh
 
 EXPOSE 10002 10000 9999 9083
 

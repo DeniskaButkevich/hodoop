@@ -29,7 +29,7 @@ COPY kafka-entrypoint.sh /kafka-entrypoint.sh
 COPY scripts /
 COPY kafka_server_jaas.conf /etc/kafka/kafka_server_jaas.conf
 
-RUN chmod +x /kafka-entrypoint.sh
+RUN chmod +x /kafka-entrypoint11.sh
 RUN chmod +x /configure-kafka.sh
 RUN chmod +x /configure-zookeeper.sh
 RUN chmod +x /create-topics.sh

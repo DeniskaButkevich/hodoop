@@ -5,7 +5,19 @@ services:
     image: dez/base-alpine:latest
     container_name: alpine-jupyter
     tty: true
+  jupyter:
+    build: ../jupyter
+    image: dez/base-alpine-jupyter:3
+    container_name: jupyter-hadoop
+#    entrypoint: ["/usr/bin/tini", "--"]
+#    command: ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root"]
+    ports:
+      - "8888:8888"
+      - "2122:2122"
+    tty: true
   hadoop:
+    depends_on:
+      - jupyter
     build: .
     image: dez/base-alpine-hadoop:3.3.1
     container_name: hadoop-hadoop
@@ -15,20 +27,9 @@ services:
     ports:
       - 9870:9870
       - 9864:9864
-      - 22:22
+      - 8080:8080
     tty: true
     restart: always
-  jupyter:
-    depends_on:
-      - hadoop
-    build: ../jupyter
-    image: dez/base-alpine-jupyter:3
-    container_name: jupyter-hadoop
-    entrypoint: ["/usr/bin/tini", "--"]
-    command: ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
-    ports:
-      - "8888:8888"
-    tty: true
 volumes:
   hadoop_namenode:
   hadoop_datanode:

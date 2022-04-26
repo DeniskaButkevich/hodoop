@@ -20,7 +20,7 @@ services:
     container_name: kafka-kafka
     depends_on:
       - zookeeper
-    entrypoint: /wait-for-it.sh zookeeper:2181 -s --timeout=5 -- /kafka-entrypoint.sh
+    entrypoint: /wait-for-it.sh zookeeper:2181 -s --timeout=5 -- /kafka-entrypoint11.sh
     command: kafka-server-start.sh config/server.properties
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
