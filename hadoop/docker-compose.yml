@@ -1,5 +1,10 @@
 version: "3"
 services:
+  alpine:
+    build: ../alpine
+    image: dez/base-alpine:latest
+    container_name: alpine-hive
+    tty: true
   hadoop:
     build: .
     image: dez/base-alpine-hadoop:3.3.1

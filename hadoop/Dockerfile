@@ -45,7 +45,9 @@ ENV USER=root
 ENV PATH $PATH:$HADOOP_HOME/bin/:$HADOOP_HOME/sbin
 
 
-RUN echo 'export JAVA_HOME=/opt/ibm/java/jre' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+#RUN echo 'export JAVA_HOME=/opt/ibm/java/jre' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 RUN echo 'HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}' >> ~/.bashrc
 RUN echo 'PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc
 RUN echo 'PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc
@@ -62,15 +64,13 @@ COPY \
 
 RUN \
  chmod +x ${HADOOP_CONF_DIR}/entrypoint.sh && \
- chmod +x ${HADOOP_CONF_DIR}/hadoop-env.sh  && \
- # for normal operation of the shell script under Windows
- dos2unix ${HADOOP_CONF_DIR}/entrypoint.sh
+ chmod +x ${HADOOP_CONF_DIR}/hadoop-env.sh
 
 RUN mkdir -p /hadoop/dfs/data
 VOLUME /hadoop/dfs/data
 
 RUN mkdir -p /hadoop/dfs/name
-VOLUME /hadoop/dfs/namedocker images
+VOLUME /hadoop/dfs/name
 
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000 9870 9864
