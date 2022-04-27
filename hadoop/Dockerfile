@@ -3,25 +3,6 @@ FROM dez/base-alpine:latest
 ENV HADOOP_VERSION 3.3.1
 ENV HADOOP_URL https://www.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
-# configure passwordless SSH
-RUN \
- ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key && \
- ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key && \
- ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa && \
- cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
-
-ADD ssh_config /root/.ssh/config
-
-RUN \
- chmod 600 /root/.ssh/config && \
- chown root:root /root/.ssh/config && \
- echo "Port 2122" >> /etc/ssh/sshd_config && \
- passwd -u root
-
-
-# Change default shell
-RUN touch /etc/login.defs && mkdir /etc/default && touch /etc/default/useradd && echo "/bin/bash" | lchsh root
-
 RUN \
     curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz && \
     curl -fSL "$HADOOP_URL.asc" -o /tmp/hbase.tar.gz.asc && \
@@ -45,9 +26,8 @@ ENV USER=root
 ENV PATH $PATH:$HADOOP_HOME/bin/:$HADOOP_HOME/sbin
 
 
-
-RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
-#RUN echo 'export JAVA_HOME=/opt/ibm/java/jre' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+#RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+RUN echo 'export JAVA_HOME=/opt/ibm/java/jre' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 RUN echo 'HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}' >> ~/.bashrc
 RUN echo 'PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc
 RUN echo 'PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc
@@ -81,5 +61,5 @@ EXPOSE 8030 8031 8032 8033 8040 8042 8088
 #Other ports
 EXPOSE 49707 2122 22
 
-ENTRYPOINT ["/opt/hadoop-3.3.1/etc/hadoop/entrypoint.sh"]
-CMD ["tail -f /dev/null"]
+#ENTRYPOINT ["/opt/hadoop-3.3.1/etc/hadoop/entrypoint.sh"]
+#CMD ["tail -f /dev/null"]
