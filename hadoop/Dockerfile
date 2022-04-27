@@ -55,7 +55,6 @@ VOLUME /hadoop/dfs/name
 RUN mkdir -p /src/notebooks
 VOLUME /sys/fs/cgroup
 
-
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000 9870 9864
 # Mapred ports
@@ -63,7 +62,7 @@ EXPOSE 10020 19888
 #Yarn ports
 EXPOSE 8030 8031 8032 8033 8040 8042 8088
 #Other ports
-EXPOSE 49707 2122 8080
+EXPOSE 49707 2122 8080 8888
 
 ENTRYPOINT ["/opt/hadoop-3.3.1/etc/hadoop/entrypoint.sh"]
-CMD ["tail -f /dev/null"]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--allow-root"]
