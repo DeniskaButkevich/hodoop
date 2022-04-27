@@ -33,7 +33,6 @@ RUN \
       && rm -rf /var/cache/apk/* \
       && rm -r /root/.cache
 
-
 WORKDIR /src/notebooks
 
 ENV TINI_VERSION v0.6.0
@@ -44,15 +43,5 @@ VOLUME ["/sys/fs/cgroup"]
 
 COPY task/ /src/notebooks/
 
-#ENTRYPOINT ["/usr/bin/tini", "--"]
-#CMD ["jupyter", "notebook", "--port=8080", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
-
-#expose Jupyter notebook default port
-
-COPY entrypoint.sh /src/notebooks/
-RUN chmod +x -v entrypoint.sh
-
-EXPOSE 8888 2122
-
-ENTRYPOINT ["sh", "-c", "rc-status && touch /run/openrc/softlevel; rc-service sshd start && tail -f /dev/null"]
-#CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
