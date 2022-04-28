@@ -41,6 +41,6 @@ Use JupyterLab for it
 + to check status use `$bash ps` because jre is not included JPS
 
 ## Version
-+ Spark 2.4.5  
-+ Skala 2.12  
-+ jupyterlab 2.1.5  
++ Spark 3.2.0  
++ Skala 2.13  
++ jupyterlab 3.4.0  

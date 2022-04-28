@@ -16,11 +16,10 @@ then
   hadoop dfs -copyFromLocal "${SPARK_HOME}/jars" "${SPARK_JARS_HDFS_PATH}"
 fi
 
-
 "${SPARK_HOME}/sbin/start-master.sh" -h spark &
 "${SPARK_HOME}/sbin/start-history-server.sh" &
 echo "Starting Spark slave node..."
 
-"${SPARK_HOME}/sbin/start-slave.sh" spark:7077 &
+"${SPARK_HOME}/sbin/start-worker.sh" spark:7077 &
 
 tail -f /dev/null
