@@ -25,16 +25,11 @@ RUN echo 'export PATH=$PATH:$HIVE_HOME/bin' >> ~/.bashrc
 # Hive setup
 ENV PATH="${PATH}:${HIVE_HOME}/bin"
 
-#ENV HADOOP_VERSION 3.3.1
-#ENV HADOOP_HOME /home/hduser/hadoop-${HADOOP_VERSION}
-#ENV HADOOP_CLASSPATH="${HADOOP_HOME}/share/hadoop/tools/lib/*"
-#ENV HADOOP_CLASSPATH="${HADOOP_CLASSPATH}:${HIVE_HOME}/lib/*"
 COPY hive-site.xml "${HIVE_CONF_DIR}/"
 
 ARG POSTGRESQL_JDBC_VERSION=42.2.24
 RUN mkdir -p /usr/share/java
 RUN curl -fSL https://jdbc.postgresql.org/download/postgresql-$POSTGRESQL_JDBC_VERSION.jar -o $HIVE_HOME/lib/postgresql-jdbc.jar
-
 
 RUN rm -rf "${HIVE_HOME}/examples"
 
