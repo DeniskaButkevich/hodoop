@@ -6,8 +6,18 @@ services:
   alpine:
     build: ../alpine
     image: dez/base-alpine:latest
-    container_name: alpine-hive
+    container_name: alpine-for-spark
     tty: true
+  postgres:
+    image: postgres:11.4-alpine
+    container_name: postgres-for-hive-and-spark
+    volumes:
+      - /var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hive
+      - POSTGRES_DB=metastore_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
   hadoop:
     build: ../hadoop
     image: dez/base-alpine-hadoop:3.3.1
@@ -22,22 +32,38 @@ services:
       - "50075:50075"
       - "9870:9870"
       - "9864:9864"
+      - "8088:8088"
+      - "8030:8030"
+      - "8031:8031"
+      - "8032:8032"
+      - "8033:8033"
+    tty: true
+  hive:
+    depends_on:
+      - postgres
+    build: .
+    image: dez/base-alpine-hive:3.1.2
+    container_name: hive-for-spark
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+      - "9999:9999"
+      - "9083:9083"
     tty: true
   spark:
     build: .
     image: dez/base-alpine-spark:2.4.5
     container_name: spark
     entrypoint:  ["/entrypoint.sh"]
-    environment:
-      - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_MEMORY=512m
     ports:
-      - 8080:8080
-      - 18080:18080
-      - 4040:4040
-      - 7077:7077
-      - 8081:8081
-      - 8082:8081
+      - "8080:8080"
+      - "18080:18080"
+      - "4040:4040"
+      - "7077:7077"
+      - "8081:8081"
+      - "8082:8081"
+      - "7001:7001"
+      - "7002:7002"
     depends_on:
       - hadoop
     tty: true
@@ -46,32 +72,9 @@ services:
       context: .
       dockerfile: jupyterlab.Dockerfile
     image: dez/base-alpine-jupyterlab:latest
-    container_name: jupyterlab
+    container_name: jupyterlab-for-spark
     ports:
-      - 8888:8888
+      - "8888:8888"
     depends_on:
       - spark
     tty: true
-
-#  spark-worker-1:
-#    image: dez/base-alpine-spark:2.4.5
-#    container_name: spark-worker-1
-#    environment:
-#      - SPARK_WORKER_CORES=1
-#      - SPARK_WORKER_MEMORY=512m
-#    command: ["/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077 >> /usr/spark"]
-#    ports:
-#      - 8081:8081
-#    depends_on:
-#      - spark-master
-#  spark-worker-2:
-#    image: dez/base-alpine-spark:2.4.5
-#    container_name: spark-worker-2
-#    environment:
-#      - SPARK_WORKER_CORES=1
-#      - SPARK_WORKER_MEMORY=512m
-#    ports:
-#      - 8082:8081
-#    command: ["/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077 >> /usr/spark"]
-#    depends_on:
-#      - spark-master

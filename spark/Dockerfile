@@ -39,31 +39,20 @@ ENV PATH="${PATH}:${SPARK_HOME}/bin"
 ENV SPARK_CONF_DIR="${SPARK_HOME}/conf"
 ENV SPARK_LOG_DIR="${SPARK_HOME}/logs"
 ENV SPARK_DIST_CLASSPATH="${HADOOP_CONF_DIR}:${HADOOP_HOME}/share/hadoop/tools/lib/*:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/yarn:${HADOOP_HOME}/share/hadoop/yarn/lib/*:${HADOOP_HOME}/share/hadoop/yarn/*"
-COPY conf/core-site.xml "${SPARK_CONF_DIR}"/
-COPY conf/hdfs-site.xml "${SPARK_CONF_DIR}"/
-COPY conf/spark-defaults.conf "${SPARK_CONF_DIR}"/
+
+COPY conf/core-site.xml conf/hive-site.xml conf/yarn-site.xml conf/hdfs-site.xml conf/spark-defaults.conf "${SPARK_CONF_DIR}"/
 
 WORKDIR ${SPARK_HOME}
 COPY task/ .
-
-# Spark with Hive
-# TODO enable in Spark 3.0
-#ENV SPARK_DIST_CLASSPATH=$SPARK_DIST_CLASSPATH:$HIVE_HOME/lib/*
-#COPY conf/hive/hive-site.xml $SPARK_CONF_DIR/
-#RUN ln -s $SPARK_HOME/jars/scala-library-*.jar $HIVE_HOME/lib \
-#    && ln -s $SPARK_HOME/jars/spark-core_*.jar $HIVE_HOME/lib \
-#    && ln -s $SPARK_HOME/jars/spark-network-common_*.jar $HIVE_HOME/lib
 
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 # spark_worker_web_ui
 EXPOSE 8081 18080 4040
-
 #spark_master_web_ui
 EXPOSE 8080
-
 #spark_master_port
 EXPOSE 7077
-
-#ENTRYPOINT ["/entrypoint.sh"]
+EXPOSE 7001
+EXPOSE 7002
