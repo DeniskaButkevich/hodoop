@@ -40,9 +40,4 @@
         <name>hbase.rest.info.port</name>
         <value>8090</value>
     </property>
-
-<!--    <property>-->
-<!--        <name>hbase.zookeeper.property.dataDir</name>-->
-<!--        <value>hdfs://hadoop:9000/user/hadoop/zookeeper</value>-->
-<!--    </property>-->
 </configuration>

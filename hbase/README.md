@@ -2,7 +2,7 @@
 Build a hbase docker image on Alpine Linux. Also install Apache Phoenix.
 
 ## Version
-- Hbase: 1.1.2
+- Hbase: 2.4.9
 - Phoenix: 4.7.0
 
 ## Exposed ports

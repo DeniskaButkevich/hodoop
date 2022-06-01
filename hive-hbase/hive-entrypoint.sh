@@ -9,11 +9,9 @@ hdfs dfs -chmod g+w /tmp
 hdfs dfs -chmod g+w /user/hive/warehouse
 
 echo "Configuring Hive..."
-schematool -dbType postgres -initSchema -verbose -ifNotExists
+#schematool -dbType postgres -initSchema -verbose -ifNotExists
 hive --service metastore &
 hiveserver2 &
 echo "hive started"
 
-hive show databases;
-hive create databases eee;
-#exec $cmd
+exec $cmd

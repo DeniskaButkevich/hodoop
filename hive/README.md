@@ -58,3 +58,5 @@ ___
 
 ## Running
 - ``docker run --name hive -p 10000:10000 -p 10002:10002 -p 9083:9083 -it base_alpine_hive:3.1.2``
+
+beeline -u 'jdbc:hive2://hive:10000 hive org.apache.hive.jdbc.HiveDriver'

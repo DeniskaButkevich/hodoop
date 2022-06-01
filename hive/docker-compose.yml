@@ -9,7 +9,7 @@ services:
     image: postgres:11.4-alpine
     container_name: postgres-hive
     volumes:
-      - /var/lib/postgresql/data/pgdata
+      - /var/lib/postgresql/data/test/pgdata
     environment:
       - POSTGRES_USER=hive
       - POSTGRES_PASSWORD=hive
@@ -19,9 +19,11 @@ services:
     build: ../hadoop
     image: dez/base-alpine-hadoop:3.3.1
     container_name: hadoop-hive
+    entrypoint: [ "/opt/hadoop-3.3.1/etc/hadoop/entrypoint.sh" ]
+    command: [ "tail -f /dev/null" ]
     volumes:
-      - hadoop_datanode:/hadoop/dfs/data
-      - hadoop_namenode:/hadoop/dfs/name
+      - hadoop_datanode:/hadoop/dfs/test/data
+      - hadoop_namenode:/hadoop/dfs/test/name
     ports:
       - "50070:50070"
       - "50075:50075"

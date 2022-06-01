@@ -1,0 +1,65 @@
+<configuration>
+
+    <!--Where in HDFS we're going to store table files.-->
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/usr/hive/warehouse</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.postgresql.Driver</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:postgresql://postgres:5432/metastore_db</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hive</value>
+    </property>
+
+    <property>
+        <name>datanucleus.autoStartMechanism</name>
+        <value>SchemaTable</value>
+    </property>
+
+    <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateTables</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hive.server2.webui.max.historic.queries</name>
+        <value>100</value>
+        <description>The maximum number of past queries to show in HiverSever2 WebUI.</description>
+    </property>
+<!--    <property>-->
+<!--        <name>hive.server2.enable.doAs</name>-->
+<!--        <value>false</value>-->
+<!--        <description>-->
+<!--            Setting this property to true will have HiveServer2 execute-->
+<!--            Hive operations as the user making the calls to it.-->
+<!--        </description>-->
+<!--    </property>-->
+    <property>
+        <name>hive.zookeeper.quorum</name>
+        <value>zookeeper:2181</value>
+    </property>
+</configuration>

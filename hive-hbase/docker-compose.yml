@@ -3,12 +3,22 @@ services:
   alpine:
     build: ../alpine
     image: dez/base-alpine:latest
-    container_name: alpine-hbase
+    container_name: alpine
     tty: true
+  postgres:
+    image: postgres:11.4-alpine
+    container_name: postgres
+    volumes:
+      - /var/lib/postgresql/data/test-hive-hbase
+    environment:
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hive
+      - POSTGRES_DB=metastore_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
   zookeeper:
     build: ../zookeeper
     image: dez/base-alpine-zookeeper:3.5.6
-    container_name: zookeeper-hbase
+    container_name: zookeeper
     hostname: zk
     ports:
       - "2181:2181"
@@ -18,12 +28,12 @@ services:
   hadoop:
     build: ../hadoop
     image: dez/base-alpine-hadoop:3.3.1
-    container_name: hadoop-hbase
+    container_name: hadoop
     entrypoint: [ "/opt/hadoop-3.3.1/etc/hadoop/entrypoint.sh" ]
     command: [ "tail -f /dev/null" ]
-#    volumes:
-#      - hadoop_datanode:/hadoop/dfs/data
-#      - hadoop_namenode:/hadoop/dfs/name
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - hadoop_namenode:/hadoop/dfs/name
     ports:
       - "50070:50070"
       - "50075:50075"
@@ -38,10 +48,12 @@ services:
     depends_on:
       - zookeeper
       - hadoop
-    build: .
+    build:
+      context: .
+      dockerfile: hbase.Dockerfile
     image: dez/base-alpine-hbase:2.4.9
     hostname: hbase
-    container_name: hbase-hbase
+    container_name: hbase
     ports:
       - "60000:60000"
       - "60010:60010"
@@ -50,6 +62,21 @@ services:
       - "8070:8070"
       - "8090:8090"
     tty: true
-#volumes:
-#  hadoop_namenode:
-#  hadoop_datanode:
+  hive:
+    depends_on:
+      - postgres
+      - hadoop
+    build:
+      context: .
+      dockerfile: hive.Dockerfile
+    image: dez/base-alpine-hive:3.1.2
+    container_name: hive
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+      - "9999:9999"
+      - "9083:9083"
+    tty: true
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:

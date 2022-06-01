@@ -18,8 +18,8 @@ ENV USER=root
 ENV HBASE_HOME=/opt/hbase
 ENV PATH=$PATH:/opt/hbase/bin
 
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+COPY hbase-entrypoint.sh /
+RUN chmod +x /hbase-entrypoint.sh
 
 # HBase Master API port
 EXPOSE 60000
@@ -36,4 +36,4 @@ EXPOSE 8090
 
 WORKDIR /opt/hbase/bin
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/hbase-entrypoint.sh"]
